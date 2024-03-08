@@ -1,9 +1,10 @@
 name: Mention Assignees on Stale Issues
 
 on:
-  schedule:
+  workflow_dispatch:
+  # schedule:
     # UTC 時間で 00:30 に実行 (日本時間で 09:30)
-    - cron: '30 0 * * *'
+    # - cron: '30 0 * * *'
 
 jobs:
   mention-stale-issues:
@@ -21,7 +22,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 現在の日付から 3 日前の日付を取得
-          date_threshold=$(date -d '3 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          # date_threshold=$(date -d '3 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          date_threshold=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M:%SZ')
           # Issue を検索
           issues=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&since=$date_threshold" | jq -r '.[] | @base64')
