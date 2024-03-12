@@ -70,6 +70,25 @@ async function addLavel() {
     console.error("Error adding label:", error);
   }
 }
+function insertCommentAfterURLSection(issueBody, comment) {
+  const urlSectionTitle = "【確認先URL】";
+  const sections = issueBody.split("\n");
+  let updatedSections = [];
+  let foundURLSection = false;
+
+  for (const section of sections) {
+    updatedSections.push(section);
+    if (foundURLSection) {
+      updatedSections.push(comment);
+      foundURLSection = false;
+    }
+    if (section.startsWith(urlSectionTitle)) {
+      foundURLSection = true;
+    }
+  }
+
+  return updatedSections.join("\n");
+}
 async function addCommentToIssue(additionalComment) {
   try {
     // Issueの現在の内容を取得
@@ -82,9 +101,9 @@ async function addCommentToIssue(additionalComment) {
 
     console.log(issue.body);
     console.log(additionalComment);
-    const updatedBody = issue.body.replace(
-      /(【確認先URL】\n)([^\n]+)/,
-      `$1$2\n${additionalComment}`
+    const updatedBody = insertCommentAfterURLSection(
+      issue.body,
+      additionalComment
     );
     console.log(updatedBody);
 
@@ -93,10 +112,7 @@ async function addCommentToIssue(additionalComment) {
       owner,
       repo,
       issue_number,
-      body: `${issue.body.replace(
-        /(【確認先URL】\n)([^\n]+)/,
-        `$1$2\n${additionalComment}`
-      )}\n${additionalComment}`,
+      body: updatedBody,
     });
 
     console.log(`Issue #${issue_number} has been updated.`);
