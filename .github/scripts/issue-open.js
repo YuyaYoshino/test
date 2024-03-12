@@ -81,7 +81,7 @@ async function addCommentToIssue(additionalComment) {
 
     // Issueの本文にコメントを追記
     const updatedBody = issue.body.replace(
-      /(【確認先URL】\n)/,
+      /(【確認先URL】\n.+\n)/,
       `$1${additionalComment}\n`
     );
 
