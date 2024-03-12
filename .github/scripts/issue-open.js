@@ -142,7 +142,9 @@ async function run() {
     // フォルダ作成
     await createFileInNewFolder(foundLabelKey, QAID, issue.body);
     // ラベル外す
-    await removeLabel();
+    if (eventType !== "opened") {
+      await removeLabel();
+    }
   } else {
     // ラベル付与
     await addLavel();
