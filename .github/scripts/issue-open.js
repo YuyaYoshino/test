@@ -80,10 +80,13 @@ async function addCommentToIssue(additionalComment) {
     });
 
     // Issueの本文にコメントを追記
+    console.log(issue.body);
+    console.log(additionalComment);
     const updatedBody = issue.body.replace(
       /(【確認先URL】\n.+\n)/,
       `$1${additionalComment}\n`
     );
+    console.log(updatedBody);
 
     // Issueを更新
     await octokit.issues.update({
