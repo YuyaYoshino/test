@@ -22,8 +22,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 現在の日付から5分前の日付を取得
-          date_threshold=$(date -d '5 minute ago' '+%Y-%m-%dT%H:%M:%SZ')
+          # 現在の日付から1分前の日付を取得
+          date_threshold=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M:%SZ')
           # Issue を検索
           issues=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&since=$date_threshold" | jq -r '.[] | @base64')
@@ -43,4 +43,10 @@ jobs:
             assignees_login=$(echo $(_jq '.assignees') | jq -r '.[].login' | tr '\n' ' ')
             
             if [[ "$last_updated" < "$date_threshold" ]]; then
-              # Issue にコメントを追加して Assignees に
+              # Issue にコメントを追加して Assignees にメンション
+              comment_body="この Issue は 3 日間更新がありません。 @$assignees_login ご確認をお願いします。"
+              curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                   -X POST -d "{\"body\": \"$comment_body\"}" \
+                   "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$issue_number/comments"
+            fi
+          done
