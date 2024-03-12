@@ -3,6 +3,7 @@ name: Issue Reminder
 on:
   schedule:
     - cron: '0 * * * *' # 毎時実行
+  workflow_dispatch:
 
 jobs:
   remind:
