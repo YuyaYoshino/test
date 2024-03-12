@@ -78,14 +78,13 @@ async function addCommentToIssue(additionalComment) {
       repo,
       issue_number,
     });
-    const bodyText = issue.body;
     // Issueの本文にコメントを追記
 
-    console.log(bodyText);
+    console.log(issue.body);
     console.log(additionalComment);
-    const updatedBody = bodyText.replace(
-      /(【確認先URL】\n.+\n)/,
-      `$1${additionalComment}\n`
+    const updatedBody = issue.body.replace(
+      /(【確認先URL】\n)([^\n]+)/,
+      `$1$2\n${additionalComment}`
     );
     console.log(updatedBody);
 
