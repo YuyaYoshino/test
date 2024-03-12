@@ -4,13 +4,12 @@ on:
     - cron: "5 2 * * *" # 毎日UTC 00:00に実行
   workflow_dispatch:
 
-permissions:
-  issues: write
-  contents: read
-
 jobs:
   mention-assignees:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
     steps:
       - name: Mention assignees on stale issues
         uses: actions/github-script@v5
