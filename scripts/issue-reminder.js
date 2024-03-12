@@ -1,5 +1,12 @@
 const { Octokit } = require("@octokit/rest");
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const fetch = require('node-fetch');
+
+const octokit = new Octokit({
+  auth: process.env.GITHUB_TOKEN,
+  request: {
+    fetch: fetch
+  }
+});
 
 async function run() {
   const owner = 'オーナー名';
