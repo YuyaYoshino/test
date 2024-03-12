@@ -17,7 +17,7 @@ async function run() {
     state: 'open',
   });
 
-  const oneHourAgo = new Date(new Date().getTime() - 60*60*1000);
+  const oneHourAgo = new Date(new Date().getTime() - 60*1000);
 
   for (const issue of issues) {
     const lastUpdated = new Date(issue.updated_at);
