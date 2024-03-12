@@ -72,7 +72,7 @@ async function run() {
         issue_number,
         name: "未設定項目あり",
       });
-      console.log(`Label "${foundLabelKey}" removed from issue #${issueId}`);
+      console.log(`Label "未設定項目あり" removed from issue #${issueId}`);
     } catch (error) {
       console.error("Error removing label:", error);
     }
@@ -85,7 +85,7 @@ async function run() {
         issue_number,
         labels: ["未設定項目あり"],
       });
-      console.log(`Label "${labelToAdd}" added to issue #${issueId}`);
+      console.log(`Label "未設定項目あり" added to issue #${issueId}`);
     } catch (error) {
       console.error("Error adding label:", error);
     }
