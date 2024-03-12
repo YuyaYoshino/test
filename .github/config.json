@@ -1,7 +1,6 @@
 {
-  "owner": "OWNER_NAME",
-  "repo": "REPO_NAME",
-  "token": "YOUR_GITHUB_TOKEN",
+  "owner": "YuyaYoshin",
+  "repo": "test",
   "labels": {
     "NTTネクシア": "N1",
     "PGF生命": "N2",
