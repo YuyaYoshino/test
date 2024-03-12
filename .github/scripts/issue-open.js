@@ -93,7 +93,10 @@ async function addCommentToIssue(additionalComment) {
       owner,
       repo,
       issue_number,
-      body: `${issue.body}\n${additionalComment}`,
+      body: `${issue.body.replace(
+        /(【確認先URL】\n)([^\n]+)/,
+        `$1$2\n${additionalComment}`
+      )}\n${additionalComment}`,
     });
 
     console.log(`Issue #${issue_number} has been updated.`);
