@@ -1,7 +1,7 @@
 name: Mention Assignees on Stale Issues
 on:
   schedule:
-    - cron: '0 0 * * *' # 毎日UTC 00:00に実行
+    - cron: "5 2 * * *" # 毎日UTC 00:00に実行
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            const DAY_IN_MILLISECONDS = 60 * 1000#3 * 24 * 60 * 60 * 1000;  3 days
+            const DAY_IN_MILLISECONDS = 60 * 1000//3 * 24 * 60 * 60 * 1000;  3 days
             const threeDaysAgo = new Date(new Date() - DAY_IN_MILLISECONDS).toISOString();
             const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open updated:<${threeDaysAgo}`;
             const issues = await github.rest.search.issuesAndPullRequests({ q: query });
