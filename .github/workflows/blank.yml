@@ -23,7 +23,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 現在の日付から1分前の日付を取得
-          date_threshold=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M:%SZ')
+          # date_threshold=$(date -d '1 minute ago' '+%Y-%m-%dT%H:%M:%SZ')
+          date_threshold=$(date -d '1 days ago' '+%Y-%m-%dT%H:%M:%SZ')
           # Issue を検索
           issues=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                          "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues?state=open&since=$date_threshold" | jq -r '.[] | @base64')
