@@ -1,8 +1,8 @@
 name: Issue Reminder
 
 on:
-  schedule:
-    - cron: '0 * * * *' # 毎時実行
+  issues:
+    types: [opened, edited] # issusが作成された際に実行
   workflow_dispatch:
 
 jobs:
@@ -15,15 +15,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install dependencies
         run: npm install @octokit/rest
-        
-      - name: Install dependencies
+
+      - name: Install additional dependencies
         run: npm install node-fetch@2.6.1
 
-      - name: Run issue reminder script
-        run: node ./.github/scripts/issue-reminder.js
+      - name: Run issue reminder script with Issue ID
+        run: node ./.github/scripts/issue-open.js ${{ github.event.issue.number }} ${{ github.event.action }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
