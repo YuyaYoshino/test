@@ -8,6 +8,7 @@ const fetch = require("node-fetch");
 const owner = config.owner;
 const repo = config.repo;
 const labels = config.labels;
+const topFolder = config.topFolder;
 const readmeFileName = config.readmeFileName;
 
 const octokit = new Octokit({
@@ -18,7 +19,7 @@ const octokit = new Octokit({
 });
 
 async function createFileInNewFolder(labelName, QAID, issueBody) {
-  const path = `${labelName}/${QAID}/${readmeFileName}`; // 新しいフォルダとファイルのパス
+  const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`; // 新しいフォルダとファイルのパス
   const message = `Create ${labelName}-folder and add ${readmeFileName}`; // コミットメッセージ
   const content = Buffer.from(issueBody).toString("base64"); // ファイルの内容
   const branch = "main"; // ブランチ名
@@ -47,6 +48,13 @@ async function run() {
     state: "open",
     issue_number,
   });
+  const hasLabel = issue.labels.some(
+    (label) => label.name === "未設定項目あり"
+  );
+  if ((eventType === "labeled") & !hasLabel) {
+    console.log("Triggers that do not require processing");
+    return;
+  }
 
   const issueLabels = issue.labels.map((label) => label.name);
 

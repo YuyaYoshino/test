@@ -8,6 +8,7 @@
     "ジブラルタ生命": "N4",
     "三愛オブリ": "N5"
   },
+  "topFolder":"QA",
   "readmeFileName": "README.md",
   "deferredMillisecond": 60000,
   "messages": {

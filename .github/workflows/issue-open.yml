@@ -2,7 +2,7 @@ name: Issue Open
 
 on:
   issues:
-    types: [opened, edited] # issusが作成された際に実行
+    types: [opened, labeled] # issusが作成された際に実行
   workflow_dispatch:
 
 jobs:
