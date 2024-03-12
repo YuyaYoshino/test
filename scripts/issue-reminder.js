@@ -2,7 +2,7 @@ const { Octokit } = require("@octokit/rest");
 const fetch = require('node-fetch');
 
 const octokit = new Octokit({
-  auth: process.env.MY_PERSONAL_TOKEN,
+  auth: process.env.GITHUB_TOKEN,
   request: {
     fetch: fetch
   }
