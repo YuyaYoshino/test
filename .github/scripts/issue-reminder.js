@@ -19,7 +19,7 @@ async function run() {
 
   for (const issue of issues) {
     const lastUpdated = new Date(issue.updated_at);
-    const oneHourAgo = new Date(new Date().getTime() - 60 * 60 * 1000);
+    const oneHourAgo = new Date(new Date().getTime() - 60 * 1000);
     if (lastUpdated < oneHourAgo) {
       const creator = issue.user.login; // Issue作成者
       let bodyMessage = `このIssueは1時間以上更新されていません。@${creator}`;
