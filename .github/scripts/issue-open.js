@@ -22,10 +22,15 @@ const octokit = new Octokit({
   },
 });
 
-async function createFileInNewFolder(labelName, QAID, issueBody) {
+async function createFileInNewFolder(labelName, QAID) {
+  const { data: issue } = await octokit.issues.get({
+    owner,
+    repo,
+    issue_number,
+  });
   const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`; // 新しいフォルダとファイルのパス
   const message = `Create ${labelName}-folder and add ${readmeFileName}`; // コミットメッセージ
-  const content = Buffer.from(issueBody).toString("base64"); // ファイルの内容
+  const content = Buffer.from(issue.body).toString("base64"); // ファイルの内容
   const branch = "main"; // ブランチ名
 
   try {
@@ -162,7 +167,7 @@ async function run() {
     // ファイル管理先URLをissueに追記
     await addCommentToIssue(markDownComment);
     // フォルダ作成
-    await createFileInNewFolder(foundLabelKey, QAID, issue.body);
+    await createFileInNewFolder(foundLabelKey, QAID);
     // ラベル外す
     if (eventType !== "opened") {
       await removeLabel();
