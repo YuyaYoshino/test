@@ -62,7 +62,7 @@ async function run() {
     : null;
 
   if (labelPrefix) {
-    const QAID = `[${labelPrefix}Q${issueId}] ${issue.title}`;
+    const QAID = `[${labelPrefix}Q${issue_number}] ${issue.title}`;
     await createFileInNewFolder(foundLabelKey, QAID, issue.body);
     // addAラベルが付いていれば外す。
     try {
@@ -72,7 +72,7 @@ async function run() {
         issue_number,
         name: "未設定項目あり",
       });
-      console.log(`Label "未設定項目あり" removed from issue #${issueId}`);
+      console.log(`Label "未設定項目あり" removed from issue #${issue_number}`);
     } catch (error) {
       console.error("Error removing label:", error);
     }
@@ -85,7 +85,7 @@ async function run() {
         issue_number,
         labels: ["未設定項目あり"],
       });
-      console.log(`Label "未設定項目あり" added to issue #${issueId}`);
+      console.log(`Label "未設定項目あり" added to issue #${issue_number}`);
     } catch (error) {
       console.error("Error adding label:", error);
     }
