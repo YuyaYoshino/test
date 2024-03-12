@@ -1,4 +1,4 @@
-name: Mention Assignees on Stale Issues
+name: Mention Assignees on All Stale Issues
 on:
   schedule:
     - cron: "5 2 * * *" # 毎日UTC 00:00に実行
@@ -11,19 +11,19 @@ jobs:
       issues: write
       contents: read
     steps:
-      - name: Mention assignees on stale issues
+      - name: Mention assignees on all stale issues
         uses: actions/github-script@v5
         with:
           script: |
-            const DAY_IN_MILLISECONDS = 60 * 1000//3 * 24 * 60 * 60 * 1000;  3 days
-            const threeDaysAgo = new Date(new Date() - DAY_IN_MILLISECONDS).toISOString();
-            const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open updated:<${threeDaysAgo}`;
+            const TEN_MINUTES_IN_MILLISECONDS = 10 * 60 * 1000; // 10 minutes
+            const tenMinutesAgo = new Date(new Date() - TEN_MINUTES_IN_MILLISECONDS).toISOString();
+            const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue updated:<${tenMinutesAgo}`;
             const issues = await github.rest.search.issuesAndPullRequests({ q: query });
 
             for (const issue of issues.data.items) {
               let assignees = issue.assignees.map(assignee => `@${assignee.login}`).join(' ');
               if(assignees.length > 0){
-                const comment = `This issue has been inactive for over 3 days. ${assignees}, please take a look.`;
+                const comment = `This issue has been inactive for over 10 minutes. ${assignees}, please take a look.`;
                 await github.rest.issues.createComment({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
