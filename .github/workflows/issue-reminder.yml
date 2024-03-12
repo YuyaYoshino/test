@@ -24,6 +24,6 @@ jobs:
         run: npm install node-fetch@2.6.1
 
       - name: Run issue reminder script
-        run: node ./scripts/issue-reminder.js
+        run: node ./.github/scripts/issue-reminder.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
