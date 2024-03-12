@@ -8,13 +8,15 @@
     "ジブラルタ生命": "N4",
     "三愛オブリ": "N5"
   },
-  "topFolder":"QA",
+  "systemLabel": "未設定項目あり",
+  "topFolder": "QA",
   "readmeFileName": "README.md",
   "deferredMillisecond": 60000,
   "messages": {
     "deferredRemind": "このIssueは1時間以上更新されていません。",
     "asignUser": "アサインされているユーザー: ",
     "asignUserNotIn": "また、QAにアサインされているユーザがいません。",
-    "scheduleRemind": "本日リマインド日です。"
+    "scheduleRemind": "本日リマインド日です。",
+    "fileManagementTargetURLTitle":"QAファイル管理先"
   }
 }
