@@ -1,4 +1,4 @@
-name: Issue Reminder
+name: Issue Open
 
 on:
   issues:

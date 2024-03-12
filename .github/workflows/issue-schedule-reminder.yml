@@ -1,4 +1,4 @@
-name: Issue Reminder
+name: Issue Schedule Reminder
 
 on:
   schedule:
