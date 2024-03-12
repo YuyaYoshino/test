@@ -9,8 +9,8 @@ const octokit = new Octokit({
 });
 
 async function run() {
-  const owner = 'オーナー名';
-  const repo = 'レポジトリ名';
+  const owner = 'YuyaYoshino';
+  const repo = 'test';
   const { data: issues } = await octokit.issues.listForRepo({
     owner,
     repo,
