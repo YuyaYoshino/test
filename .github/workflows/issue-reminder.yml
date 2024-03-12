@@ -21,7 +21,7 @@ jobs:
         run: npm install @octokit/rest
         
       - name: Install dependencies
-        run: npm install node-fetch
+        run: npm install node-fetch@2.6.1
 
       - name: Run issue reminder script
         run: node ./scripts/issue-reminder.js
