@@ -1,0 +1,32 @@
+name: Mention Assignees on Stale Issues
+on:
+  schedule:
+    - cron: '0 0 * * *' # 毎日UTC 00:00に実行
+  workflow_dispatch:
+
+jobs:
+  mention-assignees:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mention assignees on stale issues
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const DAY_IN_MILLISECONDS = 60 * 1000#3 * 24 * 60 * 60 * 1000;  3 days
+            const threeDaysAgo = new Date(new Date() - DAY_IN_MILLISECONDS).toISOString();
+            const query = `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open updated:<${threeDaysAgo}`;
+            const issues = await github.rest.search.issuesAndPullRequests({ q: query });
+
+            for (const issue of issues.data.items) {
+              let assignees = issue.assignees.map(assignee => `@${assignee.login}`).join(' ');
+              if(assignees.length > 0){
+                const comment = `This issue has been inactive for over 3 days. ${assignees}, please take a look.`;
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: comment
+                });
+              }
+            }
+          github-token: ${{ secrets.GITHUB_TOKEN }}
