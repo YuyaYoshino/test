@@ -19,7 +19,7 @@ async function run() {
     state: "open",
   });
 
-  issues.data.forEach(async (issue) => {
+  issues.forEach(async (issue) => {
     // 初期リマインダーメッセージの設定
     const creatorMention = `@${issue.user.login}`;
     let reminderMessage = `${messages.scheduleRemind}${creatorMention}`;
