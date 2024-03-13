@@ -33,26 +33,27 @@ async function run() {
     } else {
       reminderMessage += `\n${messages.asignUserNotIn}`;
     }
+    if (issue.body !== null) {
+      // 問い合わせ日時からリマインドが必要か判断
+      const isReminderNeeded = issue.body
+        .split("\n")
+        .some((line, index, lines) => {
+          return (
+            line.includes("【問い合わせ日時】") &&
+            new Date(lines[index + 1].trim()).setHours(0, 0, 0, 0) ===
+              new Date().setHours(0, 0, 0, 0)
+          );
+        });
 
-    // 問い合わせ日時からリマインドが必要か判断
-    const isReminderNeeded = issue.body
-      .split("\n")
-      .some((line, index, lines) => {
-        return (
-          line.includes("【問い合わせ日時】") &&
-          new Date(lines[index + 1].trim()).setHours(0, 0, 0, 0) ===
-            new Date().setHours(0, 0, 0, 0)
-        );
-      });
-
-    // リマインドが必要な場合、コメントを作成
-    if (isReminderNeeded) {
-      await octokit.issues.createComment({
-        owner,
-        repo,
-        issue_number: issue.number,
-        body: reminderMessage,
-      });
+      // リマインドが必要な場合、コメントを作成
+      if (isReminderNeeded) {
+        await octokit.issues.createComment({
+          owner,
+          repo,
+          issue_number: issue.number,
+          body: reminderMessage,
+        });
+      }
     }
   });
 }
