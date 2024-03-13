@@ -23,7 +23,7 @@ async function run() {
   for (const issue of issues) {
     const lastUpdated = new Date(issue.updated_at);
     const deferredTime = new Date(new Date().getTime() - deferredMillisecond);
-    if (lastUpdated < oneHourAgo) {
+    if (lastUpdated < deferredTime) {
       const creator = issue.user.login; // Issue作成者
       let bodyMessage = `${messages.deferredRemind}@${creator}`;
 
