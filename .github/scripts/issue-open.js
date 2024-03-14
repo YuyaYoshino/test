@@ -22,31 +22,53 @@ const octokit = new Octokit({
   },
 });
 
-async function createFileInNewFolder(labelName, QAID) {
-  const { data: issue } = await octokit.issues.get({
-    owner,
-    repo,
-    issue_number,
-  });
-  const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`; // 新しいフォルダとファイルのパス
-  const message = `Create ${labelName}-folder and add ${readmeFileName}`; // コミットメッセージ
-  const content = Buffer.from(issue.body).toString("base64"); // ファイルの内容
-  const branch = "main"; // ブランチ名
+async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
+  const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`;
+  const content = Buffer.from(issue.body).toString("base64");
+  const branch = "main";
 
   try {
-    // ファイルを作成する
-    const response = await octokit.repos.createOrUpdateFileContents({
+    // 指定したパスのファイル内容を取得しようとする
+    await octokit.repos.getContent({
       owner,
       repo,
       path,
-      message,
+      ref: branch,
+    });
+
+    // ファイルが存在する場合、更新用のメッセージを設定
+    const updateMessage = `Update ${labelName}-folder and modify ${readmeFileName}`;
+
+    // ファイルを更新する
+    const updateResponse = await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path,
+      message: updateMessage,
       content,
       branch,
     });
 
-    console.log("File created:", response.data.commit.html_url);
+    console.log("File updated:", updateResponse.data.commit.html_url);
   } catch (error) {
-    console.error("Error creating file:", error);
+    if (error.status === 404) {
+      // ファイルが存在しない場合、新規作成用のメッセージを設定
+      const createMessage = `Create ${labelName}-folder and add ${readmeFileName}`;
+
+      // ファイルを新規作成する
+      const createResponse = await octokit.repos.createOrUpdateFileContents({
+        owner,
+        repo,
+        path,
+        message: createMessage,
+        content,
+        branch,
+      });
+
+      console.log("File created:", createResponse.data.commit.html_url);
+    } else {
+      console.error("Error accessing file:", error);
+    }
   }
 }
 async function removeLabel() {
@@ -94,6 +116,22 @@ function insertCommentAfterURLSection(issueBody, comment) {
 
   return updatedSections.join("\n");
 }
+async function checkPathExists(path) {
+  try {
+    await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+    });
+    console.log("Path exists!");
+  } catch (error) {
+    if (error.status === 404) {
+      console.log("Path does not exist.");
+    } else {
+      console.error("An error occurred:", error);
+    }
+  }
+}
 async function addCommentToIssue(additionalComment) {
   try {
     // Issueの現在の内容を取得
@@ -104,20 +142,20 @@ async function addCommentToIssue(additionalComment) {
     });
     // Issueの本文にコメントを追記
 
-    console.log(issue.body);
-    console.log(additionalComment);
-    const updatedBody = insertCommentAfterURLSection(
-      issue.body,
-      additionalComment
-    );
-    console.log(updatedBody);
+    // console.log(issue.body);
+    // console.log(additionalComment);
+    // const updatedBody = insertCommentAfterURLSection(
+    //   issue.body,
+    //   additionalComment
+    // );
+    // console.log(updatedBody);
 
     // Issueを更新
     await octokit.issues.update({
       owner,
       repo,
       issue_number,
-      body: updatedBody,
+      body: `${updatedBody}\n${additionalComment}`,
     });
 
     console.log(`Issue #${issue_number} has been updated.`);
@@ -132,22 +170,11 @@ async function run() {
     state: "open",
     issue_number,
   });
-  const hasLabel = issue.labels.some((label) => label.name === systemLabel);
-  if (eventType === "labeled") {
-    if (!hasLabel) {
-      console.log("Processing-free label assignment trigger");
-      return;
-    } else if (userAddLabel === "github-actions[bot]") {
-      console.log("Processing unnecessary bot add label trigger");
-      return;
-    } else if (addLabelName === systemLabel) {
-      await removeLabel();
-      console.log("Processing unnecessary user add label trigger");
-      return;
-    }
-  }
-
   const issueLabels = issue.labels.map((label) => label.name);
+  const hasLabel = issueLabels.some((label) => label === systemLabel);
+  const labelCount = issueLabels.filter((label) =>
+    labels.includes(label)
+  ).length;
 
   let foundLabelKey = null;
   let labelPrefix = issueLabels.find((label) => {
@@ -160,21 +187,50 @@ async function run() {
     ? labels[foundLabelKey]
     : null;
 
-  if (labelPrefix) {
-    const QAID = `[${labelPrefix}Q${issue_number}] ${issue.title}`;
-    const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${foundLabelKey}/${QAID}`;
-    const markDownComment = `[${messages.fileManagementTargetURLTitle}](<${folderURL}>)`;
-    // ファイル管理先URLをissueに追記
-    await addCommentToIssue(markDownComment);
-    // フォルダ作成
-    await createFileInNewFolder(foundLabelKey, QAID);
-    // ラベル外す
-    if (eventType !== "opened") {
-      await removeLabel();
+  
+  if (eventType === "opened") {
+    // 作成されたが、ラベルが付いていなかったもしくは、2個以上ついていた。
+    if (labelCount !== 1) {
+      // ラベル付与
+      console.log(
+        "Triggers that do not need to be executed because they were not labeled"
+      );
+      await addLavel();
     }
-  } else {
-    // ラベル付与
-    await addLavel();
+  } else if (eventType === "labeled") {
+    if (userAddLabel === "github-actions[bot]") {
+      // ラベル追加がbotだった場合
+      console.log("Processing unnecessary bot add label trigger");
+      return;
+    } else if (addLabelName === systemLabel) {
+      // ユーザーがシステム用のラベルを付与した場合
+      await removeLabel();
+      console.log("Processing unnecessary user add label trigger");
+      return;
+    } else if (!labels.includes(addLabelName)) {
+      // 会社名ラベル以外のラベル付与だった場合
+      console.log("Processing-free label assignment trigger");
+      return;
+    } else if (labelCount === 1) {
+      // 会社名ラベルが付与されて、かつラベル数が1個だった場合
+      const QAID = `[${labelPrefix}Q${issue_number}] ${issue.title}`;
+      const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${foundLabelKey}/${QAID}`;
+      const markDownComment = `[${messages.fileManagementTargetURLTitle}](<${folderURL}>)`;
+      // ファイル管理先URLをissueに追記
+      await addCommentToIssue(markDownComment);
+      // フォルダ作成またはアップデート
+      await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
+      // // ラベル外す
+      if (labels.includes(systemLabel)) {
+        await removeLabel();
+      }
+      return;
+    } else {
+      console.log(
+        "Triggers that do not need to be executed due to multiple labels"
+      );
+      return;
+    }
   }
 }
 
