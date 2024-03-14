@@ -23,6 +23,11 @@ const octokit = new Octokit({
 });
 
 async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
+  const { data: issue } = await octokit.issues.get({
+    owner,
+    repo,
+    issue_number,
+  });
   const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`;
   const content = Buffer.from(issue.body).toString("base64");
   const branch = "main";
