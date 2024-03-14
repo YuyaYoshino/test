@@ -160,7 +160,7 @@ async function addCommentToIssue(additionalComment) {
       owner,
       repo,
       issue_number,
-      body: `${updatedBody}\n${additionalComment}`,
+      body: `${issue.body}\n${additionalComment}`,
     });
 
     console.log(`Issue #${issue_number} has been updated.`);
