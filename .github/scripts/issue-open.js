@@ -172,8 +172,9 @@ async function run() {
   });
   const issueLabels = issue.labels.map((label) => label.name);
   const hasLabel = issueLabels.some((label) => label === systemLabel);
+
   const labelCount = issueLabels.filter((label) =>
-    labels.includes(label)
+    Object.keys(labels).includes(label)
   ).length;
 
   let foundLabelKey = null;
@@ -187,7 +188,6 @@ async function run() {
     ? labels[foundLabelKey]
     : null;
 
-  
   if (eventType === "opened") {
     // 作成されたが、ラベルが付いていなかったもしくは、2個以上ついていた。
     if (labelCount !== 1) {
@@ -207,7 +207,7 @@ async function run() {
       await removeLabel();
       console.log("Processing unnecessary user add label trigger");
       return;
-    } else if (!labels.includes(addLabelName)) {
+    } else if (!Object.keys(labels).includes(addLabelName)) {
       // 会社名ラベル以外のラベル付与だった場合
       console.log("Processing-free label assignment trigger");
       return;
@@ -221,7 +221,7 @@ async function run() {
       // フォルダ作成またはアップデート
       await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
       // // ラベル外す
-      if (labels.includes(systemLabel)) {
+      if (Object.keys(labels).includes(systemLabel)) {
         await removeLabel();
       }
       return;
