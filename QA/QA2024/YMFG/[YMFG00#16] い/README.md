@@ -17,6 +17,4 @@ https://google.com/
 【チケット数】
 2
 【関連資料】
-[QAファイル管理先](<https://github.com/YuyaYoshino/test/tree/main/QA/QA2024/YMFG/%5BYMFG02%2316%5D%20%E3%81%84>)
-【関連資料】
 [QAファイル管理先](<https://github.com/YuyaYoshino/test/tree/main/QA/QA2024/YMFG/%5BYMFG00%2316%5D%20%E3%81%84>)
