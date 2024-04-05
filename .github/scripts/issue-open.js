@@ -228,7 +228,7 @@ async function run() {
     } else if (labelCount === 1) {
       // 会社名ラベルが付与されて、かつラベル数が1個だった場合
       const folderCount = await countFolders(
-        `${topFolder}/${fiscalYearFolder}/${foundLabelKey}/`
+        `${topFolder}/${fiscalYearFolder}/${foundLabelKey}`
       );
       const paddedFolderCount = String(folderCount).padStart(2, "0");
       const QAID = `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
