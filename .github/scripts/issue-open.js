@@ -232,10 +232,8 @@ async function run() {
       );
       const paddedFolderCount = String(folderCount).padStart(2, "0");
       const QAID = `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
-      const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${QAID}`;
-      const markDownComment = `【関連資料】\n[${
-        messages.fileManagementTargetURLTitle
-      }](<${encodeURIComponent(folderURL)}>)`;
+      const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${encodeURIComponent(QAID)}`;
+      const markDownComment = `【関連資料】\n[${messages.fileManagementTargetURLTitle}](<${folderURL}>)`;
       // ファイル管理先URLをissueに追記
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
