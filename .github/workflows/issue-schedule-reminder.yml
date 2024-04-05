@@ -2,7 +2,7 @@ name: Issue Schedule Reminder
 
 on:
   schedule:
-    - cron: '30 0 * * *' # 毎日9:30実行(UTC+9)
+    - cron: '30 0 * * 1-5' # 月曜日から金曜日まで毎日9:30実行(UTC+9)
   workflow_dispatch:
 
 jobs:

@@ -137,7 +137,7 @@ async function countFolders(path) {
     // フォルダのみをフィルタリング
     folderCount = data.filter((item) => item.type === "dir").length;
     console.log(`Number of folders in '${path}': ${folderCount}`);
-    console.log(JSON.stringify(data, null, "\t"));
+    // console.log(JSON.stringify(data, null, "\t"));
   } catch (error) {
     console.error(`No folders in path: ${path}`);
   }
