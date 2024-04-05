@@ -227,7 +227,7 @@ async function run() {
       return;
     } else if (labelCount === 1) {
       // 会社名ラベルが付与されて、かつラベル数が1個だった場合
-      const folderCount = countFolders(
+      const folderCount = await countFolders(
         `${topFolder}/${fiscalYearFolder}/${foundLabelKey}/`
       );
       const paddedFolderCount = String(folderCount).padStart(2, "0");
