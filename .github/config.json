@@ -2,14 +2,15 @@
   "owner": "YuyaYoshino",
   "repo": "test",
   "labels": {
-    "NTTネクシア": "N1",
-    "PGF生命": "N2",
-    "YMFG": "N3",
-    "ジブラルタ生命": "N4",
-    "三愛オブリ": "N5"
+    "NTTネクシア": "NTT",
+    "PGF生命": "PGF",
+    "YMFG": "YMFG",
+    "ジブラルタ生命": "GIB",
+    "三愛オブリ": "3i"
   },
   "systemLabel": "未設定項目あり",
   "topFolder": "QA",
+  "fiscalYearFolder": "QA2024",
   "readmeFileName": "README.md",
   "deferredMillisecond": 60000,
   "messages": {

@@ -11,6 +11,7 @@ const owner = config.owner;
 const repo = config.repo;
 const labels = config.labels;
 const topFolder = config.topFolder;
+const fiscalYearFolder = config.fiscalYearFolder;
 const readmeFileName = config.readmeFileName;
 const systemLabel = config.systemLabel;
 const messages = config.messages;
@@ -22,27 +23,32 @@ const octokit = new Octokit({
   },
 });
 
-async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
+async function createOrUpdateFileWithDifferentMessages(
+  labelName,
+  QAID,
+  issue_number
+) {
   const { data: issue } = await octokit.issues.get({
     owner,
     repo,
     issue_number,
   });
-  const path = `${topFolder}/${labelName}/${QAID}/${readmeFileName}`;
+  const path = `${topFolder}/${fiscalYearFolder}/${labelName}/${QAID}/${readmeFileName}`;
   const content = Buffer.from(issue.body).toString("base64");
   const branch = "main";
 
   try {
     // 指定したパスのファイル内容を取得しようとする
-    await octokit.repos.getContent({
+    const { data: getContentData } = await octokit.repos.getContent({
       owner,
       repo,
       path,
       ref: branch,
     });
 
-    // ファイルが存在する場合、更新用のメッセージを設定
-    const updateMessage = `Update ${labelName}-folder and modify ${readmeFileName}`;
+    // ファイルが存在する場合、更新用のメッセージとSHAを設定
+    const sha = getContentData.sha;
+    const updateMessage = `Update ${labelName}-folder and modify ${readmeFileName} #${issue_number}`;
 
     // ファイルを更新する
     const updateResponse = await octokit.repos.createOrUpdateFileContents({
@@ -52,13 +58,14 @@ async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
       message: updateMessage,
       content,
       branch,
+      sha, // 更新するファイルの現在のSHAを指定
     });
 
     console.log("File updated:", updateResponse.data.commit.html_url);
   } catch (error) {
     if (error.status === 404) {
       // ファイルが存在しない場合、新規作成用のメッセージを設定
-      const createMessage = `Create ${labelName}-folder and add ${readmeFileName}`;
+      const createMessage = `Create ${labelName}-folder and add ${readmeFileName} #${issue_number}`;
 
       // ファイルを新規作成する
       const createResponse = await octokit.repos.createOrUpdateFileContents({
@@ -121,21 +128,23 @@ function insertCommentAfterURLSection(issueBody, comment) {
 
   return updatedSections.join("\n");
 }
-async function checkPathExists(path) {
+async function countFolders(path) {
+  let folderCount = 0;
   try {
-    await octokit.repos.getContent({
+    // 指定したパスのコンテンツを取得
+    const { data } = await octokit.repos.getContent({
       owner,
       repo,
       path,
     });
-    console.log("Path exists!");
+
+    // フォルダのみをフィルタリング
+    folderCount = data.filter((item) => item.type === "dir").length;
+    console.log(`Number of folders in '${path}': ${folderCount}`);
   } catch (error) {
-    if (error.status === 404) {
-      console.log("Path does not exist.");
-    } else {
-      console.error("An error occurred:", error);
-    }
+    console.error(`Error: ${error.message}`);
   }
+  return folderCount;
 }
 async function addCommentToIssue(additionalComment) {
   try {
@@ -218,15 +227,23 @@ async function run() {
       return;
     } else if (labelCount === 1) {
       // 会社名ラベルが付与されて、かつラベル数が1個だった場合
-      const QAID = `[${labelPrefix}Q${issue_number}] ${issue.title}`;
-      const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${foundLabelKey}/${QAID}`;
+      const folderCount = countFolders(
+        `${topFolder}/${fiscalYearFolder}/${foundLabelKey}/`
+      );
+      const paddedFolderCount = String(folderCount).padStart(2, "0");
+      const QAID = `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
+      const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${QAID}`;
       const markDownComment = `[${messages.fileManagementTargetURLTitle}](<${folderURL}>)`;
       // ファイル管理先URLをissueに追記
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
-      await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
+      await createOrUpdateFileWithDifferentMessages(
+        foundLabelKey,
+        QAID,
+        issue_number
+      );
       // // ラベル外す
-      if (Object.keys(labels).includes(systemLabel)) {
+      if (hasLabel) {
         await removeLabel();
       }
       return;
