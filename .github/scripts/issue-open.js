@@ -235,7 +235,7 @@ async function run() {
       const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${QAID}`;
       const markDownComment = `【関連資料】\n[${
         messages.fileManagementTargetURLTitle
-      }](<${encodeURI(folderURL)}>)`;
+      }](<${encodeURIComponent(folderURL)}>)`;
       // ファイル管理先URLをissueに追記
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
