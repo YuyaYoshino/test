@@ -23,11 +23,7 @@ const octokit = new Octokit({
   },
 });
 
-async function createOrUpdateFileWithDifferentMessages(
-  labelName,
-  QAID,
-  issue_number
-) {
+async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
   const { data: issue } = await octokit.issues.get({
     owner,
     repo,
@@ -141,11 +137,36 @@ async function countFolders(path) {
     // フォルダのみをフィルタリング
     folderCount = data.filter((item) => item.type === "dir").length;
     console.log(`Number of folders in '${path}': ${folderCount}`);
-    console.log(JSON.stringify(data,null,'\t'));
+    console.log(JSON.stringify(data, null, "\t"));
   } catch (error) {
     console.error(`No folders in path: ${path}`);
   }
   return folderCount;
+}
+async function issueIdByFolderExistsConfirmation(path) {
+  let result = undefined;
+  try {
+    // 指定したパスのコンテンツを取得
+    const { data } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+    });
+
+    // フォルダのみをフィルタリング
+    result = data.find((item) => item.name.includes("#16"));
+    // console.log(JSON.stringify(data,null,'\t'));
+  } catch (error) {
+    console.error(`No folders in path: ${path}`);
+  }
+
+  if (result) {
+    console.log(`Folder with issueID: ${result.path}`);
+    result = result.name;
+  } else {
+    console.error(`There was no folder for issueID: ${path}`);
+  }
+  return result;
 }
 async function addCommentToIssue(additionalComment) {
   try {
@@ -231,8 +252,11 @@ async function run() {
       const folderCount = await countFolders(
         `${topFolder}/${fiscalYearFolder}/${foundLabelKey}`
       );
+      const issueIDFolderName = await issueIdByFolderExistsConfirmation(
+        `${topFolder}/${fiscalYearFolder}/${foundLabelKey}`
+      );
       const paddedFolderCount = String(folderCount + 1).padStart(2, "0");
-      const QAID = `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
+      const QAID = issueIDFolderName ? issueIDFolderName : `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
       const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${encodeURIComponent(
         QAID
       )}`;
@@ -240,11 +264,7 @@ async function run() {
       // ファイル管理先URLをissueに追記
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
-      await createOrUpdateFileWithDifferentMessages(
-        foundLabelKey,
-        QAID,
-        issue_number
-      );
+      await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
       // // ラベル外す
       if (hasLabel) {
         await removeLabel();
