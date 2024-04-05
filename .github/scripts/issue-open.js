@@ -142,7 +142,7 @@ async function countFolders(path) {
     folderCount = data.filter((item) => item.type === "dir").length;
     console.log(`Number of folders in '${path}': ${folderCount}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`No folders in path: ${path}`);
   }
   return folderCount;
 }
@@ -233,7 +233,9 @@ async function run() {
       const paddedFolderCount = String(folderCount).padStart(2, "0");
       const QAID = `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
       const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${QAID}`;
-      const markDownComment = `【関連資料】\n[${messages.fileManagementTargetURLTitle}](<${folderURL}>)`;
+      const markDownComment = `【関連資料】\n[${
+        messages.fileManagementTargetURLTitle
+      }](<${encodeURI(folderURL)}>)`;
       // ファイル管理先URLをissueに追記
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
