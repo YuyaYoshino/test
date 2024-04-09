@@ -5,11 +5,15 @@ const addLabelName = process.argv[5];
 const config = require("../config.json");
 
 const { Octokit } = require("@octokit/rest");
+const { graphql } = require("@octokit/graphql");
 const fetch = require("node-fetch");
 
 const owner = config.owner;
 const repo = config.repo;
+const projectID = config.projectID;
+const fieldID = config.fieldID;
 const labels = config.labels;
+const projectLabels = config.projectLabels;
 const topFolder = config.topFolder;
 const fiscalYearFolder = config.fiscalYearFolder;
 const readmeFileName = config.readmeFileName;
@@ -22,7 +26,36 @@ const octokit = new Octokit({
     fetch: fetch,
   },
 });
+const graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token YOUR_PERSONAL_ACCESS_TOKEN`,
+  },
+});
 
+async function updateProjectField(projectId, fieldId, newValue) {
+  const mutation = `
+    mutation ($projectId: ID!, $fieldId: ID!, $value: String!) {
+      updateProjectField(input: { projectId: $projectId, fieldId: $fieldId, value: $value }) {
+        projectField {
+          name
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    projectId: projectId,
+    fieldId: fieldId,
+    value: newValue,
+  };
+
+  try {
+    const response = await graphqlWithAuth(mutation, variables);
+    console.log("Field updated:", response);
+  } catch (error) {
+    console.error("Error updating project field:", error);
+  }
+}
 async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
   const { data: issue } = await octokit.issues.get({
     owner,
@@ -256,7 +289,9 @@ async function run() {
         `${topFolder}/${fiscalYearFolder}/${foundLabelKey}`
       );
       const paddedFolderCount = String(folderCount + 1).padStart(2, "0");
-      const QAID = issueIDFolderName ? issueIDFolderName : `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
+      const QAID = issueIDFolderName
+        ? issueIDFolderName
+        : `[${labelPrefix}${paddedFolderCount}#${issue_number}] ${issue.title}`;
       const folderURL = `https://github.com/${owner}/${repo}/tree/main/${topFolder}/${fiscalYearFolder}/${foundLabelKey}/${encodeURIComponent(
         QAID
       )}`;
@@ -265,6 +300,12 @@ async function run() {
       await addCommentToIssue(markDownComment);
       // フォルダ作成またはアップデート
       await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
+      // ProjectsのprojectLabelsフィールドを設定
+      await updateProjectField(
+        projectID,
+        fieldID,
+        projectLabels[foundLabelKey]
+      );
       // // ラベル外す
       if (hasLabel) {
         await removeLabel();

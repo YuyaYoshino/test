@@ -1,12 +1,21 @@
 {
   "owner": "YuyaYoshino",
   "repo": "test",
+  "projectID":"3",
+  "fieldID":"88357072",
   "labels": {
-    "NTTネクシア": "NTT",
-    "PGF生命": "PGF",
+    "NTT Nexia": "NTT",
+    "PGF": "PGF",
     "YMFG": "YMFG",
-    "ジブラルタ生命": "GIB",
-    "三愛オブリ": "3i"
+    "GIB": "GIB",
+    "3i": "3i"
+  },
+  "projectLabels": {
+    "NTT Nexia": "NTT",
+    "PGF": "PGF",
+    "YMFG": "YMFG",
+    "GIB": "GIB",
+    "3i": "3i"
   },
   "systemLabel": "未設定項目あり",
   "topFolder": "QA",
