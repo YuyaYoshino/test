@@ -10,8 +10,8 @@ const fetch = require("node-fetch");
 
 const owner = config.owner;
 const repo = config.repo;
-const projectID = config.projectID;
-const fieldID = config.fieldID;
+const projectId = config.projectId;
+const fieldId = config.fieldId;
 const labels = config.labels;
 const projectLabels = config.projectLabels;
 const topFolder = config.topFolder;
@@ -33,28 +33,71 @@ const graphqlWithAuth = graphql.defaults({
   request: { fetch },
 });
 
-async function updateProjectField(projectId, fieldId, newValue) {
+async function listProjectItems() {
+  const query = `
+  query {
+    repository(owner: "${owner}", name: "${repo}") {
+      resourcePath
+      issue(number: ${issue_number}) {
+        projectItems(last:100) {
+          totalCount
+          nodes {
+            id
+            __typename
+            updatedAt
+            fieldValueByName(name: "Status") {
+              ... on ProjectV2ItemFieldSingleSelectValue {
+                name
+              }
+            }
+          }
+        }
+        timelineItems (first:100) {
+          updatedAt
+        }
+      }
+    }
+  }
+  `;
+
+  try {
+    const response = await graphqlWithAuth(query);
+    const projectItems = response.repository.issue.projectItems.nodes;
+
+    console.log(`Total Project Items: ${response.repository.issue.projectItems.totalCount}`);
+    projectItems.forEach(item => {
+      console.log(`Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`);
+    });
+    console.log(JSON.stringify(data, null, "\t"));
+    return projectItems
+  } catch (error) {
+    console.error("Error fetching project items:", error);
+  }
+}
+async function updateProjectV2ItemField(singleSelectOptionId) {
+  const itemId = await listProjectItems();
   const mutation = `
-    mutation ($projectId: ID!, $fieldId: ID!, $value: String!) {
-      updateProjectField(input: { projectId: $projectId, fieldId: $fieldId, value: $value }) {
-        projectField {
-          name
+    mutation {
+      updateProjectV2ItemFieldValue(input: {
+        projectId: "${projectId}",
+        itemId: "${itemId}",
+        fieldId: "${fieldId}",
+        value: {
+          singleSelectOptionId: "${singleSelectOptionId}"
+        }
+      }) {
+        projectV2Item {
+          id
         }
       }
     }
   `;
 
-  const variables = {
-    projectId: projectId,
-    fieldId: fieldId,
-    value: newValue,
-  };
-
   try {
-    const response = await graphqlWithAuth(mutation, variables);
-    console.log("Field updated:", response);
+    const response = await graphqlWithAuth(mutation);
+    console.log("Project V2 Item Field Value updated:", response);
   } catch (error) {
-    console.error("Error updating project field:", error);
+    console.error("Error updating Project V2 Item Field Value:", error);
   }
 }
 async function createOrUpdateFileWithDifferentMessages(labelName, QAID) {
@@ -302,11 +345,7 @@ async function run() {
       // フォルダ作成またはアップデート
       await createOrUpdateFileWithDifferentMessages(foundLabelKey, QAID);
       // ProjectsのprojectLabelsフィールドを設定
-      await updateProjectField(
-        projectID,
-        fieldID,
-        projectLabels[foundLabelKey]
-      );
+      await updateProjectV2ItemField(projectLabels[foundLabelKey]);
       // // ラベル外す
       if (hasLabel) {
         await removeLabel();
