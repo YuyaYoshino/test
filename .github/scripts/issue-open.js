@@ -190,7 +190,7 @@ async function issueIdByFolderExistsConfirmation(path) {
     });
 
     // フォルダのみをフィルタリング
-    result = data.find((item) => item.name.includes("#16"));
+    result = data.find((item) => item.name.includes(`#${issue_number}`));
     // console.log(JSON.stringify(data,null,'\t'));
   } catch (error) {
     console.error(`No folders in path: ${path}`);
