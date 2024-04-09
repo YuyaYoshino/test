@@ -59,6 +59,7 @@ async function listProjectItems() {
     }
   }
   `;
+  console.log(query)
 
   try {
     const response = await graphqlWithAuth(query);
