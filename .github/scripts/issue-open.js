@@ -68,7 +68,7 @@ async function listProjectItems() {
     projectItems.forEach(item => {
       console.log(`Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`);
     });
-    console.log(JSON.stringify(data, null, "\t"));
+    console.log(JSON.stringify(response, null, "\t"));
     return projectItems
   } catch (error) {
     console.error("Error fetching project items:", error);
