@@ -64,7 +64,7 @@ async function listProjectItems() {
     repository(owner: "YuyaYoshino", name: "test") {
       projectsV2(first: 10) {
         nodes {
-          name
+          __typename
           items(first: 100) {
             totalCount
             nodes {
