@@ -34,7 +34,7 @@ const graphqlWithAuth = graphql.defaults({
 });
 
 async function listProjectItems() {
-  const query = `
+  query = `
   query {
     repository(owner: "${owner}", name: "${repo}") {
       resourcePath
@@ -59,18 +59,42 @@ async function listProjectItems() {
     }
   }
   `;
-  console.log(query)
+  query = `
+  query {
+    repository(owner: "YuyaYoshino", name: "test") {
+      projectsV2(first: 10) {
+        nodes {
+          name
+          items(first: 100) {
+            totalCount
+            nodes {
+              id
+              title
+              updatedAt
+            }
+          }
+        }
+      }
+    }
+  }
+  `;
+
+  console.log(query);
 
   try {
     const response = await graphqlWithAuth(query);
     const projectItems = response.repository.issue.projectItems.nodes;
 
-    console.log(`Total Project Items: ${response.repository.issue.projectItems.totalCount}`);
-    projectItems.forEach(item => {
-      console.log(`Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`);
+    console.log(
+      `Total Project Items: ${response.repository.issue.projectItems.totalCount}`
+    );
+    projectItems.forEach((item) => {
+      console.log(
+        `Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`
+      );
     });
     console.log(JSON.stringify(response, null, "\t"));
-    return projectItems
+    return projectItems;
   } catch (error) {
     console.error("Error fetching project items:", error);
   }
