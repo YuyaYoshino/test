@@ -61,17 +61,15 @@ async function listProjectItems() {
   `;
   query = `
   query {
-    repository(owner: "YuyaYoshino", name: "test") {
-      projectsV2(first: 10) {
-        nodes {
-          __typename
-          items(first: 100) {
-            totalCount
-            nodes {
-              id
-              title
-              updatedAt
-            }
+    repository(owner: "${owner}", name: "${repo}") {
+      resourcePath
+      issue(number: ${issue_number}) {
+        projectItems(last:100) {
+          totalCount
+          nodes {
+            id
+            __typename
+            updatedAt
           }
         }
       }
