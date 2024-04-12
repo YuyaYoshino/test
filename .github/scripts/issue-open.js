@@ -107,7 +107,11 @@ async function listProjectItems() {
     }
   }
   `;
-  const variables = { owner: owner, repo: repo, issueNumber: issue_number };
+  const variables = {
+    owner: owner,
+    repo: repo,
+    issueNumber: Number(issue_number),
+  };
   console.log(query);
   console.log(variables);
 
