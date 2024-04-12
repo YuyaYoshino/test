@@ -122,11 +122,11 @@ async function listProjectItems() {
     console.log(
       `Total Project Items: ${response.repository.issue.projectItems.totalCount}`
     );
-    projectItems.forEach((item) => {
-      console.log(
-        `Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`
-      );
-    });
+    // projectItems.forEach((item) => {
+    //   console.log(
+    //     `Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`
+    //   );
+    // });
     console.log(JSON.stringify(response, null, "\t"));
     return projectItems;
   } catch (error) {
