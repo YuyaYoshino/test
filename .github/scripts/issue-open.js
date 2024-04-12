@@ -64,7 +64,10 @@ async function listProjectItems() {
     repository(owner: "${owner}", name: "${repo}") {
       resourcePath
       issue(number: ${issue_number}) {
-
+        number
+        title
+        state
+        closedAt
       }
     }
   }
