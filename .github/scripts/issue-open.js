@@ -60,23 +60,58 @@ async function listProjectItems() {
   }
   `;
   query = `
-  query {
-    repository(owner: "${owner}", name: "${repo}") {
-      resourcePath
-      issue(number: ${issue_number}) {
+  query($owner: String!, $repo: String!, $issueNumber: Int!) {
+    repository(owner: $owner, name: $repo) {
+      issue(number: $issueNumber) {
         number
         title
         state
         closedAt
+        projectItems(first: 10) {
+          totalCount
+          nodes {
+              project {
+                  number
+                  title
+              }
+              status: fieldValueByName(name: "Status") {
+                  ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                  }
+              }
+              iteration: fieldValueByName(name: "Iteration") {
+                  ... on ProjectV2ItemFieldIterationValue {
+                      title
+                      startDate
+                      duration
+                  }
+              }
+              storyType: fieldValueByName(name: "Story Type") {
+                  ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                  }
+              }
+              storyPoint: fieldValueByName(name: "Story Point") {
+                  ... on ProjectV2ItemFieldNumberValue {
+                      number
+                  }
+              }
+              from: fieldValueByName(name: "From") {
+                  ... on ProjectV2ItemFieldSingleSelectValue {
+                      name
+                  }
+              }
+          }
+        }
       }
     }
   }
   `;
-
+  const variables = { owner: owner, repo: repo, issueNumber: issue_number };
   console.log(query);
 
   try {
-    const response = await graphqlWithAuth(query);
+    const response = await graphqlWithAuth(query, variables);
     const projectItems = response.repository.issue.projectItems.nodes;
 
     console.log(
