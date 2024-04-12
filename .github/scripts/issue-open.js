@@ -53,7 +53,7 @@ async function updateProjectV2ItemField(labelName) {
   }
   `;
   mutation = `
-  query getNumberFields {
+  query getNumberFields($ownerName: String!, $projectName: String!, $issueNumber: Int!) {
     repository(owner: $ownerName, name: $projectName) {
       issue(number: $issueNumber) {
         id
