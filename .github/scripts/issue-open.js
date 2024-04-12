@@ -109,6 +109,7 @@ async function listProjectItems() {
   `;
   const variables = { owner: owner, repo: repo, issueNumber: issue_number };
   console.log(query);
+  console.log(variables);
 
   try {
     const response = await graphqlWithAuth(query, variables);
