@@ -53,22 +53,20 @@ async function updateProjectV2ItemField(labelName) {
   }
   `;
   mutation = `
-  query($username: String!, $projectNumber: Int!) {
-    user(login: $username) {
-      projectV2(number: $projectNumber) {
-        fields(first: 10) {
+  query getNumberFields {
+    repository(owner: $ownerName, name: $projectName) {
+      issue(number: $issueNumber) {
+        id
+        projectItems(first: 10) {
           nodes {
-            ... on ProjectV2SingleSelectField {
-              id
-              name
-              options {
-                id
-                name
+            id
+            fieldValues(first: 10) {
+              nodes {
+                ... on ProjectV2ItemFieldNumberValue {
+                  id
+                  number
+                }
               }
-            }
-            ... on ProjectV2Field {
-              id
-              name
             }
           }
         }
@@ -78,8 +76,9 @@ async function updateProjectV2ItemField(labelName) {
   `;
 
   const variables = {
-    username: "YuyaYoshino",
-    projectNumber: 3,
+    ownerName: owner,
+    projectName: "@YuyaYoshino's untitled project",
+    issueNumber: Number(issue_number),
     // issueId: Number(issue_number),
     // column: labelName,
     // fieldId: `PVTI_${fieldId}`,
