@@ -33,101 +33,34 @@ const graphqlWithAuth = graphql.defaults({
   request: { fetch },
 });
 
-async function listProjectItems() {
-  query = `
-  query {
-    repository(owner: "${owner}", name: "${repo}") {
-      resourcePath
-      issue(number: ${issue_number}) {
-        projectItems(last:100) {
-          totalCount
-          nodes {
-            id
-            __typename
-            updatedAt
-            fieldValueByName(name: "Status") {
-              ... on ProjectV2ItemFieldSingleSelectValue {
-                name
-              }
-            }
-          }
-        }
-        timelineItems (first:100) {
-          updatedAt
-        }
-      }
-    }
-  }
-  `;
-  query = `
-  query($id: ID!){
-    node(id: $id) {
-    ... on Issue {
-        projectItems(first: 10) {
-          ... on ProjectV2ItemConnection {
-            nodes {
-              ... on ProjectV2Item {
-                project {
-                  ... on ProjectV2 {
-                    id, title
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+async function updateProjectV2ItemField(labelName) {
+  const mutation = `
+  mutation updateProjectV2ItemFieldValue(
+    $issueId: ID!, 
+    $column: String!, 
+    $columnFieldId: ID!, 
+    $projectId: ID!
+  ) {
+    updateColumn1: updateProjectV2ItemFieldValue(
+      input:{
+        itemId: $issueId, 
+        fieldId: $columnFieldId, 
+        projectId: $projectId, 
+        value: {iterationId: $columnId}}
+    ) {
+      clientMutationId
     }
   }
   `;
   const variables = {
-    ID: Number(issue_number),
-    // owner: owner,
-    // repo: repo,
-    // issueNumber: Number(issue_number),
+    issueId: Number(issue_number),
+    column: labelName,
+    fieldId: Number(fieldId),
+    projectId: Number(projectId),
   };
-  console.log(query);
-  console.log(variables);
 
   try {
-    const response = await graphqlWithAuth(query, variables);
-    const projectItems = response.repository.issue.projectItems.nodes;
-    console.log(JSON.stringify(response, null, "\t"));
-
-    console.log(
-      `Total Project Items: ${response.repository.issue.projectItems.totalCount}`
-    );
-    // projectItems.forEach((item) => {
-    //   console.log(
-    //     `Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`
-    //   );
-    // });
-    return projectItems;
-  } catch (error) {
-    console.error("Error fetching project items:", error);
-  }
-}
-async function updateProjectV2ItemField(singleSelectOptionId) {
-  const itemId = await listProjectItems();
-  const mutation = `
-    mutation {
-      updateProjectV2ItemFieldValue(input: {
-        projectId: "${projectId}",
-        itemId: "${itemId}",
-        fieldId: "${fieldId}",
-        value: {
-          singleSelectOptionId: "${singleSelectOptionId}"
-        }
-      }) {
-        projectV2Item {
-          id
-        }
-      }
-    }
-  `;
-
-  try {
-    const response = await graphqlWithAuth(mutation);
+    const response = await graphqlWithAuth(mutation, variables);
     console.log("Project V2 Item Field Value updated:", response);
   } catch (error) {
     console.error("Error updating Project V2 Item Field Value:", error);
