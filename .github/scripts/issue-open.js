@@ -64,14 +64,7 @@ async function listProjectItems() {
     repository(owner: "${owner}", name: "${repo}") {
       resourcePath
       issue(number: ${issue_number}) {
-        projectItems(last:100) {
-          totalCount
-          nodes {
-            id
-            __typename
-            updatedAt
-          }
-        }
+
       }
     }
   }
