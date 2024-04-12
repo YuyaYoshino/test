@@ -55,7 +55,7 @@ async function updateProjectV2ItemField(labelName) {
   const variables = {
     issueId: Number(issue_number),
     column: labelName,
-    fieldId: fieldId,
+    fieldId: `PVTI_${fieldId}`,
     projectId: Number(projectId),
   };
 
