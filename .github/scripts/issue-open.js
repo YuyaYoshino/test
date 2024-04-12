@@ -58,7 +58,6 @@ async function updateProjectV2ItemField(labelName) {
     fieldId: Number(fieldId),
     projectId: Number(projectId),
   };
-  console.log(JSON.stringify(response, null, "\t"));
 
   try {
     console.log(mutation);
