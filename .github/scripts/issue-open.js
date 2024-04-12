@@ -66,15 +66,7 @@ async function updateProjectV2ItemField(labelName) {
                 name
               }
             }
-            ... on ProjectV2TextField {
-              id
-              name
-            }
-            ... on ProjectV2IterationField {
-              id
-              name
-            }
-            ... on ProjectV2NumberField {
+            ... on ProjectV2Field {
               id
               name
             }
