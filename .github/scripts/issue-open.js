@@ -34,7 +34,7 @@ const graphqlWithAuth = graphql.defaults({
 });
 
 async function updateProjectV2ItemField(labelName) {
-  const mutation = `
+  var mutation = `
   mutation updateProjectV2ItemFieldValue(
     $issueId: ID!, 
     $column: String!, 
@@ -52,11 +52,28 @@ async function updateProjectV2ItemField(labelName) {
     }
   }
   `;
+  mutation = `
+  query($username: String!, $projectNumber: Int!) {
+    user(login: $username) {
+      projectV2(number: $projectNumber) {
+        fields(first: 10) {
+          nodes {
+            id
+            name
+          }
+        }
+      }
+    }
+  }
+  `
+
   const variables = {
-    issueId: Number(issue_number),
-    column: labelName,
-    fieldId: `PVTI_${fieldId}`,
-    projectId: Number(projectId),
+    username:"YuyaYoshino",
+    projectNumber:3,
+    // issueId: Number(issue_number),
+    // column: labelName,
+    // fieldId: `PVTI_${fieldId}`,
+    // projectId: Number(projectId),
   };
 
   try {
