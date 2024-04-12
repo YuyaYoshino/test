@@ -58,18 +58,36 @@ async function updateProjectV2ItemField(labelName) {
       projectV2(number: $projectNumber) {
         fields(first: 10) {
           nodes {
-            id
-            name
+            ... on ProjectV2SingleSelectField {
+              id
+              name
+              options {
+                id
+                name
+              }
+            }
+            ... on ProjectV2TextField {
+              id
+              name
+            }
+            ... on ProjectV2IterationField {
+              id
+              name
+            }
+            ... on ProjectV2NumberField {
+              id
+              name
+            }
           }
         }
       }
     }
   }
-  `
+  `;
 
   const variables = {
-    username:"YuyaYoshino",
-    projectNumber:3,
+    username: "YuyaYoshino",
+    projectNumber: 3,
     // issueId: Number(issue_number),
     // column: labelName,
     // fieldId: `PVTI_${fieldId}`,
