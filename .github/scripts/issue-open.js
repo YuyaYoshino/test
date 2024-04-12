@@ -77,7 +77,7 @@ async function updateProjectV2ItemField(labelName) {
 
   const variables = {
     ownerName: owner,
-    projectName: "@YuyaYoshino's untitled project",
+    projectName: repo,
     issueNumber: Number(issue_number),
     // issueId: Number(issue_number),
     // column: labelName,
