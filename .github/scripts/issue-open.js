@@ -58,9 +58,13 @@ async function updateProjectV2ItemField(labelName) {
     fieldId: Number(fieldId),
     projectId: Number(projectId),
   };
+  console.log(JSON.stringify(response, null, "\t"));
 
   try {
+    console.log(mutation);
+    console.log(variables);
     const response = await graphqlWithAuth(mutation, variables);
+    console.log(JSON.stringify(response, null, "\t"));
     console.log("Project V2 Item Field Value updated:", response);
   } catch (error) {
     console.error("Error updating Project V2 Item Field Value:", error);
