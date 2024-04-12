@@ -52,37 +52,37 @@ async function updateProjectV2ItemField(labelName) {
     }
   }
   `;
-  mutation = `
-  query getNumberFields($ownerName: String!, $projectName: String!, $issueNumber: Int!) {
-    repository(owner: $ownerName, name: $projectName) {
-      issue(number: $issueNumber) {
-        id
-        projectItems(first: 10) {
-          nodes {
-            id
-            fieldValues(first: 10) {
-              nodes {
-                ... on ProjectV2ItemFieldNumberValue {
-                  id
-                  number
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  `;
+  // mutation = `
+  // query getNumberFields($ownerName: String!, $projectName: String!, $issueNumber: Int!) {
+  //   repository(owner: $ownerName, name: $projectName) {
+  //     issue(number: $issueNumber) {
+  //       id
+  //       projectItems(first: 10) {
+  //         nodes {
+  //           id
+  //           fieldValues(first: 10) {
+  //             nodes {
+  //               ... on ProjectV2ItemFieldNumberValue {
+  //                 id
+  //                 number
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  // `;
 
   const variables = {
-    ownerName: owner,
-    projectName: repo,
-    issueNumber: Number(issue_number),
-    // issueId: Number(issue_number),
-    // column: labelName,
-    // fieldId: `PVTI_${fieldId}`,
-    // projectId: Number(projectId),
+    // ownerName: owner,
+    // projectName: repo,
+    // issueNumber: Number(issue_number),
+    issueId: Number(issue_number),
+    column: labelName,
+    fieldId: `I_kwDOLdXQFc6FE1Sj`,
+    projectId: Number(projectId),
   };
 
   try {
