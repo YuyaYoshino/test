@@ -46,7 +46,7 @@ async function updateProjectV2ItemField(labelName) {
         itemId: $issueId, 
         fieldId: $columnFieldId, 
         projectId: $projectId, 
-        value: {iterationId: $columnId}}
+        value: {iterationId: $column}}
     ) {
       clientMutationId
     }
