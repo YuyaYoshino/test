@@ -60,47 +60,20 @@ async function listProjectItems() {
   }
   `;
   query = `
-  query($owner: String!, $repo: String!, $issueNumber: Int!) {
-    repository(owner: $owner, name: $repo) {
-      issue(number: $issueNumber) {
-        number
-        title
-        state
-        closedAt
+  query($id: ID!){
+    node(id: $id) {
+    ... on Issue {
         projectItems(first: 10) {
-          totalCount
-          nodes {
-              project {
-                  number
-                  title
-              }
-              status: fieldValueByName(name: "Status") {
-                  ... on ProjectV2ItemFieldSingleSelectValue {
-                      name
+          ... on ProjectV2ItemConnection {
+            nodes {
+              ... on ProjectV2Item {
+                project {
+                  ... on ProjectV2 {
+                    id, title
                   }
+                }
               }
-              iteration: fieldValueByName(name: "Iteration") {
-                  ... on ProjectV2ItemFieldIterationValue {
-                      title
-                      startDate
-                      duration
-                  }
-              }
-              storyType: fieldValueByName(name: "Story Type") {
-                  ... on ProjectV2ItemFieldSingleSelectValue {
-                      name
-                  }
-              }
-              storyPoint: fieldValueByName(name: "Story Point") {
-                  ... on ProjectV2ItemFieldNumberValue {
-                      number
-                  }
-              }
-              from: fieldValueByName(name: "From") {
-                  ... on ProjectV2ItemFieldSingleSelectValue {
-                      name
-                  }
-              }
+            }
           }
         }
       }
@@ -108,9 +81,10 @@ async function listProjectItems() {
   }
   `;
   const variables = {
-    owner: owner,
-    repo: repo,
-    issueNumber: Number(issue_number),
+    ID: Number(issue_number),
+    // owner: owner,
+    // repo: repo,
+    // issueNumber: Number(issue_number),
   };
   console.log(query);
   console.log(variables);
@@ -118,6 +92,7 @@ async function listProjectItems() {
   try {
     const response = await graphqlWithAuth(query, variables);
     const projectItems = response.repository.issue.projectItems.nodes;
+    console.log(JSON.stringify(response, null, "\t"));
 
     console.log(
       `Total Project Items: ${response.repository.issue.projectItems.totalCount}`
@@ -127,7 +102,6 @@ async function listProjectItems() {
     //     `Item ID: ${item.id}, Type: ${item.__typename}, Updated At: ${item.updatedAt}`
     //   );
     // });
-    console.log(JSON.stringify(response, null, "\t"));
     return projectItems;
   } catch (error) {
     console.error("Error fetching project items:", error);
