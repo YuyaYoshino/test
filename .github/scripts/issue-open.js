@@ -26,6 +26,7 @@ const octokit = new Octokit({
     fetch: fetch,
   },
 });
+console.log("CUSTOM_GITHUB_TOKEN",process.env.CUSTOM_GITHUB_TOKEN);
 const graphqlWithAuth = graphql.defaults({
   headers: {
     authorization: `token ${process.env.CUSTOM_GITHUB_TOKEN}`,
@@ -36,13 +37,13 @@ const graphqlWithAuth = graphql.defaults({
 async function updateProjectV2ItemField(labelName) {
   var mutation = `
   mutation {
-    updateProjectV2ItemFieldValue(input:{
-      itemId:"I_kwDOLdXQFc6FE1Sj",
-      projectId:"PVT_kwHOCPc4N84Af0hw",
-      fieldId:"PVTFSV_lQHOCPc4N84Af0hwzgOF9n_OCiXaKQ",
-      value:{singleSelectOptionId:"a127aedd"}
-    }){
-      projectV2Item{
+    updateProjectV2ItemFieldValue(input: {
+      itemId: "I_kwDOLdXQFc6FE1Sj",
+      projectId: "PVT_kwHOCPc4N84Af0hw",
+      fieldId: "PVTFSV_lQHOCPc4N84Af0hwzgOF9n_OCiXaKQ",
+      value: {singleSelectOptionId: "a127aedd"}
+    }) {
+      projectV2Item {
         id
         __typename
       }
