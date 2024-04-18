@@ -38,7 +38,7 @@ async function updateProjectV2ItemField(labelName) {
   mutation {
     updateProjectV2ItemFieldValue(input:{
       itemId:"I_kwDOLdXQFc6FE1Sj",
-      projectId:3,
+      projectId:"PVT_kwHOCPc4N84Af0hw",
       fieldId:"PVTFSV_lQHOCPc4N84Af0hwzgOF9n_OCiXaKQ",
       value:{singleSelectOptionId:"NTT"}
     }){
