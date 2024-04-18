@@ -28,7 +28,7 @@ const octokit = new Octokit({
 });
 const graphqlWithAuth = graphql.defaults({
   headers: {
-    authorization: `token ${process.env.GITHUB_TOKEN}`,
+    authorization: `token ${process.env.CUSTOM_GITHUB_TOKEN}`,
   },
   request: { fetch },
 });
