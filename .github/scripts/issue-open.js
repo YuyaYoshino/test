@@ -40,7 +40,7 @@ async function updateProjectV2ItemField(labelName) {
       itemId:"I_kwDOLdXQFc6FE1Sj",
       projectId:"PVT_kwHOCPc4N84Af0hw",
       fieldId:"PVTFSV_lQHOCPc4N84Af0hwzgOF9n_OCiXaKQ",
-      value:{singleSelectOptionId:"NTT"}
+      value:{singleSelectOptionId:"a127aedd"}
     }){
       projectV2Item{
         id
