@@ -27,3 +27,4 @@ jobs:
         run: node ./.github/scripts/issue-open.js ${{ github.event.issue.number }} ${{ github.event.action }} ${{ github.event.sender.login }} ${{ github.event.label.name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CUSTOM_GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
