@@ -35,22 +35,20 @@ const graphqlWithAuth = graphql.defaults({
 
 async function updateProjectV2ItemField(labelName) {
   var mutation = `
-  mutation updateProjectV2ItemFieldValue(
-    $issueId: ID!, 
-    $column: String!, 
-    $columnFieldId: ID!, 
-    $projectId: ID!
-  ) {
-    updateColumn1: updateProjectV2ItemFieldValue(
-      input:{
-        itemId: $issueId, 
-        fieldId: $columnFieldId, 
-        projectId: $projectId, 
-        value: {iterationId: $column}}
-    ) {
-      clientMutationId
+  mutation {
+    updateProjectV2ItemFieldValue(input:{
+      itemId:"I_kwDOLdXQFc6FE1Sj",
+      projectId:3,
+      fieldId:"PVTFSV_lQHOCPc4N84Af0hwzgOF9n_OCiXaKQ",
+      value:{singleSelectOptionId:"NTT"}
+    }){
+      projectV2Item{
+        id
+        __typename
+      }
     }
   }
+  
   `;
   // mutation = `
   // query getNumberFields($ownerName: String!, $projectName: String!, $issueNumber: Int!) {
@@ -88,7 +86,7 @@ async function updateProjectV2ItemField(labelName) {
   try {
     console.log(mutation);
     console.log(variables);
-    const response = await graphqlWithAuth(mutation, variables);
+    const response = await graphqlWithAuth(mutation); //, variables);
     console.log(JSON.stringify(response, null, "\t"));
     console.log(JSON.stringify(response, null, 2));
     console.log("Project V2 Item Field Value updated:", response);
