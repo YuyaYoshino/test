@@ -21,7 +21,7 @@ const systemLabel = config.systemLabel;
 const messages = config.messages;
 
 const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
+  auth: process.env.CUSTOM_GITHUB_TOKEN,
   request: {
     fetch: fetch,
   },
