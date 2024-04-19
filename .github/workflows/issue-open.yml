@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "16"
+          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: npm install @octokit/rest
